@@ -1,0 +1,23 @@
+{
+  "cxxNamespace": ["abeman_reactnativenitrodeviceinfo"],
+  "ios": {
+    "iosModuleName": "ReactNativeNitroDeviceInfo"
+  },
+  "android": {
+    "androidNamespace": ["abeman","reactnativenitrodeviceinfo"],
+    "androidCxxLibName": "abeman_reactnativenitrodeviceinfo"
+  },
+  "autolinking": {
+    "ReactNativeNitroDeviceInfo": {
+      "ios": {
+        "language": "swift",
+        "implementationClassName": "ReactNativeNitroDeviceInfo"
+      },
+      "android": {
+        "language": "kotlin",
+        "implementationClassName": "ReactNativeNitroDeviceInfo"
+      }
+    }
+  },
+  "ignorePaths": ["node_modules"]
+}
