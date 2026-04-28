@@ -1,39 +1,318 @@
 # @abeman/react-native-nitro-device-info
 
-devices info
+A high-performance device information library for React Native, built on [Nitro Modules](https://nitro.margelo.com/) for zero-overhead native access through JSI.
+
+## Features
+
+- 🚀 **Zero-overhead JSI bindings** - Direct JavaScript-to-native communication
+- 📱 **100+ device properties** - Comprehensive device information
+- 📦 **TypeScript-first** - Full type definitions included
+- 🔄 **Familiar APIs** - Compatible with `react-native-device-info` and `expo-device` APIs
 
 ## Installation
 
-
 ```sh
+# Using npm
 npm install @abeman/react-native-nitro-device-info react-native-nitro-modules
 
-> `react-native-nitro-modules` is required as this library relies on [Nitro Modules](https://nitro.margelo.com/).
+# Using yarn
+yarn add @abeman/react-native-nitro-device-info react-native-nitro-modules
+
+# Using pnpm
+pnpm add @abeman/react-native-nitro-device-info react-native-nitro-modules
 ```
 
+> **Note**: `react-native-nitro-modules` ^0.35.5 is required as a peer dependency.
 
-## Usage
+### iOS Setup
 
-
-```js
-import { multiply } from '@abeman/react-native-nitro-device-info';
-
-// ...
-
-const result = multiply(3, 7);
+```sh
+cd ios && pod install && cd ..
 ```
 
+### Android Setup
+
+No additional configuration needed! Gradle auto-linking handles everything.
+
+## Quick Start
+
+### Basic Usage
+
+```typescript
+import { DeviceInfoModule } from '@abeman/react-native-nitro-device-info';
+
+// Synchronous properties (immediate - <1ms)
+console.log(DeviceInfoModule.deviceId); // "iPhone14,2"
+console.log(DeviceInfoModule.systemVersion); // "15.0"
+console.log(DeviceInfoModule.brand); // "Apple"
+console.log(DeviceInfoModule.model); // "iPhone"
+
+// Synchronous properties (immediate - <1ms)
+const uniqueId = DeviceInfoModule.uniqueId;
+console.log(uniqueId); // "FCDBD8EF-62FC-4ECB-B2F5-92C9E79AC7F9"
+
+const manufacturer = DeviceInfoModule.manufacturer;
+console.log(manufacturer); // "Apple"
+
+const isTablet = DeviceInfoModule.isTablet;
+console.log(isTablet); // false
+
+const batteryLevel = DeviceInfoModule.getBatteryLevel();
+console.log(`Battery: ${(batteryLevel * 100).toFixed(0)}%`); // "Battery: 85%"
+
+// Asynchronous methods (Promise-based - <100ms)
+const ipAddress = await DeviceInfoModule.getIpAddress();
+console.log(ipAddress); // "192.168.1.100"
+
+const carrier = await DeviceInfoModule.getCarrier();
+console.log(carrier); // "T-Mobile"
+```
+
+### Advanced Usage
+
+```typescript
+import { DeviceInfoModule } from '@abeman/react-native-nitro-device-info';
+import type { PowerState, DeviceType } from '@abeman/react-native-nitro-device-info';
+
+// Device Identification
+const deviceId = DeviceInfoModule.deviceId; // "iPhone14,2"
+const manufacturer = DeviceInfoModule.manufacturer; // "Apple"
+const uniqueId = DeviceInfoModule.uniqueId; // "FCDBD8EF-..."
+
+// Device Capabilities
+const isTablet = DeviceInfoModule.isTablet; // false
+const hasNotch = DeviceInfoModule.getHasNotch(); // true
+const hasDynamicIsland = DeviceInfoModule.getHasDynamicIsland(); // false
+const isCameraPresent = DeviceInfoModule.isCameraPresent; // true
+const isEmulator = DeviceInfoModule.isEmulator; // false
+const deviceYearClass = DeviceInfoModule.deviceYearClass; // 2021 (estimated year class)
+
+// System Resources
+const totalMemory = DeviceInfoModule.totalMemory;
+const usedMemory = DeviceInfoModule.getUsedMemory();
+const totalDisk = DeviceInfoModule.totalDiskCapacity;
+const freeDisk = DeviceInfoModule.getFreeDiskStorage();
+const uptime = DeviceInfoModule.getUptime(); // Uptime in milliseconds
+
+console.log(
+  `RAM: ${(usedMemory / 1024 / 1024).toFixed(0)}MB / ${(totalMemory / 1024 / 1024).toFixed(0)}MB`
+);
+console.log(
+  `Storage: ${(freeDisk / 1024 / 1024 / 1024).toFixed(1)}GB free of ${(totalDisk / 1024 / 1024 / 1024).toFixed(1)}GB`
+);
+console.log(
+  `Uptime: ${Math.floor(uptime / 1000 / 60 / 60)}h ${Math.floor((uptime / 1000 / 60) % 60)}m`
+);
+
+// Battery Information
+const batteryLevel = DeviceInfoModule.getBatteryLevel();
+const isCharging = DeviceInfoModule.getIsBatteryCharging();
+const powerState: PowerState = DeviceInfoModule.getPowerState();
+
+console.log(
+  `Battery: ${(batteryLevel * 100).toFixed(0)}% ${isCharging ? '(charging)' : ''}`
+);
+console.log(`Low Power Mode: ${powerState.lowPowerMode}`);
+
+// Application Metadata
+const version = DeviceInfoModule.version;
+const buildNumber = DeviceInfoModule.buildNumber;
+const bundleId = DeviceInfoModule.bundleId;
+const appName = DeviceInfoModule.applicationName;
+
+console.log(`${appName} (${bundleId})`);
+console.log(`Version: ${version} (${buildNumber})`);
+
+// Network & Connectivity (Async)
+const ipAddress = await DeviceInfoModule.getIpAddress();
+const carrier = await DeviceInfoModule.getCarrier();
+const isLocationEnabled = await DeviceInfoModule.isLocationEnabled();
+
+console.log(`IP: ${ipAddress}`);
+console.log(`Carrier: ${carrier}`);
+console.log(`Location Services: ${isLocationEnabled ? 'enabled' : 'disabled'}`);
+
+// Platform-Specific
+const apiLevel = DeviceInfoModule.apiLevel; // Android: 33, iOS: -1
+const abis = DeviceInfoModule.supportedAbis; // ["arm64-v8a"]
+const hasGms = DeviceInfoModule.getHasGms(); // Android only
+const canSideload = DeviceInfoModule.isSideLoadingEnabled(); // Android only
+
+// Device Integrity (Root/Jailbreak Detection) - Local detection only
+const isCompromised = DeviceInfoModule.isDeviceCompromised(); // Sync, <50ms
+const isCompromisedAsync = await DeviceInfoModule.verifyDeviceIntegrity(); // Async
+```
+
+## API Reference
+
+For complete API documentation with all 100+ methods and properties, see **[API-REFERENCE.md](API-REFERENCE.md)**.
+
+### Quick Reference
+
+#### Core Properties (Synchronous - <1ms)
+
+```typescript
+DeviceInfoModule.deviceId; // "iPhone14,2"
+DeviceInfoModule.brand; // "Apple"
+DeviceInfoModule.systemVersion; // "15.0"
+DeviceInfoModule.model; // "iPhone"
+```
+
+#### Common Properties
+
+```typescript
+// Device Info
+DeviceInfoModule.uniqueId; // Sync
+DeviceInfoModule.isTablet; // Sync
+DeviceInfoModule.totalMemory; // Sync
+DeviceInfoModule.getBatteryLevel(); // Sync method
+DeviceInfoModule.deviceYearClass; // Sync - estimated device year class
+DeviceInfoModule.getUptime(); // Sync - uptime in milliseconds
+
+// App Info
+DeviceInfoModule.version; // Sync
+DeviceInfoModule.bundleId; // Sync
+
+// Platform (Android)
+DeviceInfoModule.isSideLoadingEnabled(); // Sync - check sideloading permission
+
+// Network (Async methods)
+await DeviceInfoModule.getIpAddress(); // ~20-50ms
+await DeviceInfoModule.getCarrier(); // ~20-50ms
+```
+
+For the complete list of all methods, properties, and detailed documentation, see **[API-REFERENCE.md](API-REFERENCE.md)**.
+
+## Type Definitions
+
+The library includes full TypeScript definitions. For complete type documentation, see [API-REFERENCE.md](API-REFERENCE.md#type-definitions).
+
+```typescript
+import type {
+  DeviceInfo,
+  PowerState,
+  BatteryState,
+  DeviceType,
+} from '@abeman/react-native-nitro-device-info';
+```
+
+## Migration from react-native-device-info
+
+If you're migrating from `react-native-device-info`, the API is 80% compatible:
+
+### Before (react-native-device-info)
+
+```typescript
+import DeviceInfo from 'react-native-device-info';
+
+// Everything was async or method-based
+const deviceId = DeviceInfo.getDeviceId();
+const brand = DeviceInfo.getBrand();
+const uniqueId = await DeviceInfo.getUniqueId();
+const totalMemory = await DeviceInfo.getTotalMemory();
+const batteryLevel = await DeviceInfo.getBatteryLevel();
+const isTablet = DeviceInfo.isTablet();
+```
+
+### After (@abeman/react-native-nitro-device-info)
+
+```typescript
+import { DeviceInfoModule } from '@abeman/react-native-nitro-device-info';
+
+// Properties are now direct getters
+const deviceId = DeviceInfoModule.deviceId; // Property, not method
+const brand = DeviceInfoModule.brand; // Property, not method
+
+// Most values are now synchronous properties or methods
+const uniqueId = DeviceInfoModule.uniqueId; // Property, sync!
+const totalMemory = DeviceInfoModule.totalMemory; // Property, sync!
+const batteryLevel = DeviceInfoModule.getBatteryLevel(); // Method, sync!
+const isTablet = DeviceInfoModule.isTablet; // Property, sync!
+
+// Only network/connectivity remain async methods
+const ipAddress = await DeviceInfoModule.getIpAddress();
+```
+
+**Key Differences**:
+
+- Uses Nitro HybridObject (JSI) instead of TurboModule for zero-overhead calls
+- Core device properties are now direct property accessors (not methods)
+- Most methods are synchronous for instant access (<1ms)
+- Only I/O-bound operations (network, install times) remain async
+
+## Acknowledgement
+
+- [This Week in React #256](https://thisweekinreact.com/newsletter/256#react-native)
+- [NativeWeekly - React Native dev briefing](https://nativeweekly.beehiiv.com/)
+  - [October 31 2025: Issue 3](https://nativeweekly.beehiiv.com/p/october-31-2025-issue-3)
+  - [Nov 14 2025: Issue 5](https://nativeweekly.beehiiv.com/p/nov-14-2025-issue-5)
+- [The React Native Rewind](https://thereactnativerewind.com/)
+  - [A Nitro Revolution, Building Games in React Native, and a New Era of Navigation](https://thereactnativerewind.com/issues-blog-post/a-nitro-revolution-building-games-in-react-native-and-a-new-era-of-navigation)
+
+## Example Apps
+
+This repository includes two example applications to help you get started and test the library:
+
+### Showcase App (`example/showcase/`)
+
+A simple, single-screen app that displays comprehensive device information.
+
+**Purpose**: Demonstrates the library's API and displays all available device properties.
+
+**Running the showcase app**:
+
+```bash
+# From repository root
+yarn showcase start  # Start Metro bundler
+yarn showcase ios    # Run on iOS
+yarn showcase android # Run on Android
+
+# Or from the showcase directory
+cd example/showcase
+yarn start           # Start Metro bundler
+yarn ios             # Run on iOS
+yarn android         # Run on Android
+```
+
+### Benchmark App (`example/benchmark/`)
+
+An independent performance testing application for benchmarking the Nitro module.
+
+**Purpose**: Performance testing, stress testing, and comparison with alternative implementations.
+
+**Running the benchmark app**:
+
+```bash
+# From repository root
+yarn benchmark start  # Start Metro bundler
+yarn benchmark ios    # Run on iOS
+yarn benchmark android # Run on Android
+
+# Or from the benchmark directory
+cd example/benchmark
+yarn start            # Start Metro bundler
+yarn ios              # Run on iOS
+yarn android          # Run on Android
+```
+
+For more details, see:
+
+- [Showcase App README](example/showcase/README.md)
+- [Benchmark App README](example/benchmark/README.md)
+
+## Platform Support
+
+- **iOS**: 13.4+
+- **Android**: API 24+ (Android 7.0 Nougat)
 
 ## Contributing
 
-- [Development workflow](CONTRIBUTING.md#development-workflow)
-- [Sending a pull request](CONTRIBUTING.md#sending-a-pull-request)
-- [Code of conduct](CODE_OF_CONDUCT.md)
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow and guidelines.
 
 ## License
 
-MIT
+MIT © [HyunWoo Lee](https://github.com/l2hyunwoo)
 
 ---
 
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+Made with ❤️ using [Nitro Modules](https://nitro.margelo.com/)
