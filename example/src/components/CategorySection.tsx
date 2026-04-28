@@ -4,7 +4,15 @@
  */
 
 import React, { useState } from 'react';
-import { LayoutAnimation, Platform, StyleSheet, Text, TouchableOpacity, UIManager, View, } from 'react-native';
+import {
+  LayoutAnimation,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
 import type { DeviceProperty } from '../types';
 import { PropertyCategory } from '../types';
 import { PropertyRow } from './PropertyRow';

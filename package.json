@@ -50,16 +50,17 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/huynq1175/abeman-react-native-nitro-device-info.git"
+    "url": "git+https://github.com/huynq1175/react-native-nitro-device-info.git"
   },
   "author": "@newbear <huynq1175@gmail.com> (https://github.com/huynq1175)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/huynq1175/abeman-react-native-nitro-device-info/issues"
+    "url": "https://github.com/huynq1175/react-native-nitro-device-info/issues"
   },
-  "homepage": "https://github.com/huynq1175/abeman-react-native-nitro-device-info#readme",
+  "homepage": "https://github.com/huynq1175/react-native-nitro-device-info#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^20.5.0",
