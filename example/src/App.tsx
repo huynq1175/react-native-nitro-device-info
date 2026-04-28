@@ -1,20 +1,99 @@
-import { Text, View, StyleSheet } from 'react-native';
-import { multiply } from '@abeman/react-native-nitro-device-info';
+/**
+ * Example App for react-native-nitro-device-info
+ * Displays device information with tabs for static properties and live hooks demo
+ */
 
-const result = multiply(3, 7);
+import { useState } from 'react';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  StatusBar,
+  SafeAreaView,
+  Platform,
+} from 'react-native';
+import DeviceInfoScreen from './DeviceInfoScreen';
+import HooksDemo from './screens/HooksDemo';
+
+type TabType = 'properties' | 'hooks';
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState<TabType>('properties');
+
   return (
-    <View style={styles.container}>
-      <Text>Result: {result}</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="white" />
+      {/* Tab Bar */}
+      <View style={styles.tabBar}>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'properties' && styles.activeTab]}
+          onPress={() => setActiveTab('properties')}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === 'properties' && styles.activeTabText,
+            ]}
+          >
+            Properties
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'hooks' && styles.activeTab]}
+          onPress={() => setActiveTab('hooks')}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === 'hooks' && styles.activeTabText,
+            ]}
+          >
+            Hooks Demo
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Content */}
+      <View style={styles.content}>
+        {activeTab === 'properties' ? <DeviceInfoScreen /> : <HooksDemo />}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
+    // Android SafeAreaView doesn't handle status bar, so add padding manually
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 14,
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#007AFF',
+  },
+  tabText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  activeTabText: {
+    color: '#007AFF',
+    fontWeight: '600',
+  },
+  content: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
   },
 });
